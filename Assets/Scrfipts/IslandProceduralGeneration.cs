@@ -14,25 +14,13 @@ public class IslandProceduralGeneration : MonoBehaviour
     [SerializeField] private float _secondarySpawnRandomMultiplier = 0.2f;
     [SerializeField] private float _secondaryBranchLength = 5;
     [SerializeField] private Vector2 _minMaxRadius;
-    [SerializeField] public List<PointRadius> _allTerrainPoints;
     [SerializeField] private float _stageDistance = 60;
+    [SerializeField] private TextureFromPoints tfp;
 
-    private Vector2 _minXZ, _maxXZ;
+    public List<PointRadius> _allTerrainPoints;
+    public Vector2 _minXZ, _maxXZ;
 
-    [System.Serializable]
-    public struct PointRadius
-    {
-        public Vector3 Center;
-        public float Radius;
-
-        public PointRadius(Vector3 center, float radius)
-        {
-            Center = center;
-            Radius = radius;
-        }
-    }
-
-    void OnDrawGizmos()
+    void Start()
     {
         Random.InitState(_randomSeed);
         _minXZ = new Vector2(Mathf.Infinity, Mathf.Infinity);
@@ -63,9 +51,9 @@ public class IslandProceduralGeneration : MonoBehaviour
         for (int i = 0; i < _allTerrainPoints.Count; i++)
         {
             float randomRadius = _minMaxRadius.x + (_minMaxRadius.y - _minMaxRadius.x) * Random.Range(0,1f);
-            Gizmos.DrawSphere(_allTerrainPoints[i].Center, _allTerrainPoints[i].Radius);
+            //Gizmos.DrawSphere(_allTerrainPoints[i].Center, _allTerrainPoints[i].Radius);
         }
-
+        tfp.GenerateTexture(_minXZ, _maxXZ, _allTerrainPoints);
     }
 
     private void GetMinMax(ref Vector2 minXZ, ref Vector2 žaxXZ, ref List<PointRadius> terrainPoints)
