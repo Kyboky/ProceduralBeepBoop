@@ -9,22 +9,17 @@ using UnityEngine;
 public class IslandProceduralGeneration : MonoBehaviour
 {
     [SerializeField] private int _numberOfPoints = 10;
-    [SerializeField] private int _randomSeed = 1;
     [SerializeField] private float _secondarySpawnChanceNewBranch = 0.9f;
     [SerializeField] private float _secondarySpawnRandomMultiplier = 0.2f;
     [SerializeField] private float _secondaryBranchLength = 5;
     [SerializeField] private Vector2 _minMaxRadius;
     [SerializeField] private float _stageDistance = 60;
-    [SerializeField] private TextureFromPoints tfp;
 
     public List<PointRadius> _allTerrainPoints;
-    public Vector2 _minXZ, _maxXZ;
 
-    void Start()
+    public List<PointRadius> GenerateLevelSkeleton(int seed)
     {
-        Random.InitState(_randomSeed);
-        _minXZ = new Vector2(Mathf.Infinity, Mathf.Infinity);
-        _maxXZ = new Vector2(-Mathf.Infinity, -Mathf.Infinity);
+        Random.InitState(seed);
         _allTerrainPoints = new List<PointRadius>();
         Vector3[] positions = GenerateRandomStartAndEndPoints(Vector3.zero, _stageDistance);
         PointRadius[] points = GenerateSplinePoints(positions, _numberOfPoints);
@@ -46,38 +41,15 @@ public class IslandProceduralGeneration : MonoBehaviour
             }
         }
 
-        GetMinMax(ref _minXZ, ref _maxXZ, ref _allTerrainPoints);
-
         for (int i = 0; i < _allTerrainPoints.Count; i++)
         {
             float randomRadius = _minMaxRadius.x + (_minMaxRadius.y - _minMaxRadius.x) * Random.Range(0,1f);
             //Gizmos.DrawSphere(_allTerrainPoints[i].Center, _allTerrainPoints[i].Radius);
         }
-        tfp.GenerateTexture(_minXZ, _maxXZ, _allTerrainPoints);
+        return _allTerrainPoints;
     }
 
-    private void GetMinMax(ref Vector2 minXZ, ref Vector2 žaxXZ, ref List<PointRadius> terrainPoints)
-    {
-        foreach (PointRadius point in terrainPoints)
-        {
-            if (point.Center.x > žaxXZ.x)
-            {
-                žaxXZ.x = point.Center.x;
-            }
-            if (point.Center.z > žaxXZ.y)
-            {
-                žaxXZ.y = point.Center.z;
-            }
-            if (point.Center.x < minXZ.x)
-            {
-                minXZ.x = point.Center.x;
-            }
-            if (point.Center.z < minXZ.y)
-            {
-                minXZ.y = point.Center.z;
-            }
-        }
-    }
+    
 
     private Vector3[] GenerateRandomStartAndEndPoints(Vector3 startPoint, float distance)
     {
