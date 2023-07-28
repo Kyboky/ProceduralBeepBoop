@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Dependencies.Sqlite;
@@ -5,8 +6,13 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
+using Random = UnityEngine.Random;
+
 public class MeshGenerator : MonoBehaviour
 {
+
+    public static Action<LevelInfo> onLevelLoaded;
+
     [SerializeField] private int _meshResolution = 100;
     [SerializeField] private int _terrainSize = 10;
     [SerializeField] private int _randomSeed;
@@ -15,21 +21,28 @@ public class MeshGenerator : MonoBehaviour
 
     private PointRadius[] _allTerrainPoints;
     private MeshCollider _meshCollider;
-    [SerializeField]  IslandProceduralGeneration islandProceduralGeneration;
-    Vector2 minXZ, maxXZ;
+    [SerializeField] private IslandProceduralGeneration islandProceduralGeneration;
+    private Vector2 minXZ, maxXZ;
 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
 
     private Vector3[] _vertices;
     private int[] _triangles;
-    int _trisCount;
-    int _vertCount;
+    private int _trisCount;
+    private int _vertCount;
+    private int _startVertex;
+    private int _endVertex;
+    private Vector3 _startPosition;
+    private Vector3 _endPosition;
+
+    private LevelInfo levelInfo;
 
     private void Awake()
     {
         _meshCollider = GetComponent<MeshCollider>();
         _meshFilter = GetComponent<MeshFilter>();
+        levelInfo = new LevelInfo();
     }
 
     public void Generate()
@@ -41,7 +54,8 @@ public class MeshGenerator : MonoBehaviour
         _triangles = new int[(_meshResolution-1) * (_meshResolution - 1) * 6];
         _terrainArray = new float[_meshResolution, _meshResolution];
         GenerateTerrain();
-
+        
+        onLevelLoaded?.Invoke(levelInfo);
     }
 
 
@@ -71,6 +85,9 @@ public class MeshGenerator : MonoBehaviour
                 _vertCount++;
             }
         }
+        levelInfo.StartingPoint = _vertices[_startVertex];
+        levelInfo.EndingPoint = _vertices[_endVertex];
+
         _vertCount = 0;
 
         for (int i = 0; i < _meshResolution - 1; i++)
@@ -100,6 +117,7 @@ public class MeshGenerator : MonoBehaviour
         }
         _mesh.RecalculateNormals();
         _meshCollider.sharedMesh = _mesh;
+
     }
 
     private void ArrayFromPointsAndRadius()
@@ -112,15 +130,18 @@ public class MeshGenerator : MonoBehaviour
         float zDiff = maxXZ.y - minXZ.y;
         float pixelDistance = Mathf.Max(xDiff, zDiff) / _meshResolution;
         bool xGreater = xDiff > zDiff;
-
+        int vert = 0;
         foreach (PointRadius pointRadius in _allTerrainPoints)
         {
+            
             int x = (int)Mathf.Floor((float)(pointRadius.Center.x + (xGreater ? 0 : (zDiff - xDiff) / 2) - minXZ.x) / (float)pixelDistance);
             
             int z = (int)Mathf.Floor((float)(pointRadius.Center.z + (xGreater ? (xDiff-zDiff)/2 : 0) - minXZ.y) / (float)pixelDistance);
+            if(vert == 0)_startVertex = z + x * _meshResolution;
+            if (vert == islandProceduralGeneration._numberOfPoints-1) _endVertex = z + x * _meshResolution;
+            vert++;
             float radiusInPoints = pointRadius.Radius / pixelDistance;
             int radiusInPointsInt = (int)Mathf.Floor(radiusInPoints);
-
             for (int i = x - radiusInPointsInt; i < x + radiusInPoints; i++)
             {
                 for (int j = z - radiusInPointsInt; j < z + radiusInPoints; j++)

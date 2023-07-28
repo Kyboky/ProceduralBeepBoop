@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class IslandProceduralGeneration : MonoBehaviour
 {
-    [SerializeField] private int _numberOfPoints = 10;
+    [SerializeField] public int _numberOfPoints = 10;
     [SerializeField] private float _secondarySpawnChanceNewBranch = 0.9f;
     [SerializeField] private float _secondarySpawnRandomMultiplier = 0.2f;
     [SerializeField] private float _secondaryBranchLength = 5;

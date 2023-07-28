@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 3.63
   gaussianEnd:
     m_OverrideState: 1
-    m_Value: 20.94
+    m_Value: 17.9
   gaussianMaxRadius:
     m_OverrideState: 1
     m_Value: 0.816
@@ -124,7 +124,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.44
+    m_Value: 0.39
   smoothness:
     m_OverrideState: 1
     m_Value: 0.36
