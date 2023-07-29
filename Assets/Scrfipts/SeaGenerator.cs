@@ -35,7 +35,7 @@ public class SeaGenerator : MonoBehaviour
         {
             for (int j = 0; j < resolution; j++)
             {
-                _vertices[_vertCount] = new Vector3( -5 +j * distanceBetweenPoints, 0.2f,-5 + i * distanceBetweenPoints);
+                _vertices[_vertCount] = new Vector3( -5 +j * distanceBetweenPoints, 0.225f,-5 + i * distanceBetweenPoints);
                 uv[_vertCount] = new Vector2((float)j / resolution, (float)i / resolution);
                 _vertCount++;
             }

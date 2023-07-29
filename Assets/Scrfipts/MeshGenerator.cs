@@ -80,7 +80,8 @@ public class MeshGenerator : MonoBehaviour
         {
             for (int j = 0; j < _meshResolution; j++)
             {
-                _vertices[_vertCount] = new Vector3(j * distanceBetweenPoints, _terrainArray[i,j], i * distanceBetweenPoints);
+                float yOffset = Mathf.PerlinNoise(i * 0.05f * 200 / _meshResolution, j * 0.05f * 200 / _meshResolution) * 0.1f - 0.03f;
+                _vertices[_vertCount] = new Vector3(j * distanceBetweenPoints, _terrainArray[i,j] + yOffset + Random.Range(-0.01f,0.01f), i * distanceBetweenPoints);
                 uv[_vertCount] = new Vector2((float)j / _meshResolution, (float)i / _meshResolution);
                 _vertCount++;
             }
@@ -174,11 +175,11 @@ public class MeshGenerator : MonoBehaviour
             for (int j = 10; j < _meshResolution-10; j++)
             {
                 float perlin = Mathf.PerlinNoise(xOffset + i*0.05f * 200/_meshResolution, yOffset + j * 0.05f * 200 / _meshResolution) * 0.5f;
-                perlin = perlin > 0.3f ? 0.5f:0f;
-                _terrainArray[i, j] += perlin;
+                //perlin = perlin > 0.3f ? 0.3f:0f;
+                _terrainArray[i, j] = Mathf.Max(perlin > 0.3f ? 0.3f : 0f, _terrainArray[i, j]); 
 
-                _terrainArray[i, j] = Mathf.Clamp(_terrainArray[i, j], 0, 0.3f);
-                _terrainArray[i, j] += Random.Range(-0.01f, 0.01f);
+                //_terrainArray[i, j] = Mathf.Clamp(_terrainArray[i, j], 0, 0.3f);
+                //_terrainArray[i, j] += Random.Range(-0.01f, 0.01f);
             }
         }
     }

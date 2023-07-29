@@ -13,6 +13,6 @@ public class SpawnEnding : MonoBehaviour
 
     private void Spawn(LevelInfo info)
     {
-        Instantiate(_ending, info.EndingPoint, Quaternion.identity);
+        Instantiate(_ending, info.EndingPoint + Vector3.up*0.05f, Quaternion.identity);
     }
 }
